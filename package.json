@@ -1,0 +1,25 @@
+{
+  "name": "js-backend",
+  "version": "1.0.0",
+  "description": "backend using javascript",
+  "keywords": [
+    "backend",
+    "javascript",
+    "nodejs"
+  ],
+  "homepage": "https://github.com/RishavJbn/javascript-backend#readme",
+  "bugs": {
+    "url": "https://github.com/RishavJbn/javascript-backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RishavJbn/javascript-backend.git"
+  },
+  "license": "ISC",
+  "author": "Rishav Singh",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
