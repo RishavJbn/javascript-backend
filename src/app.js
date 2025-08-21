@@ -15,4 +15,14 @@ app.use(express.json({ limit: "16kb" })); //express.json is used to parse incomi
 app.use(express.urlencoded({ limit: "16kb" })); //express.urlencoded is used to parse incoming requests with urlencoded payloads in simple terms it means it takes the URL-encoded data from the request body and makes it available in req.body
 app.use(cookieParser()); //cookieParser is used to parse cookies attached to the client request object
 
+
+//routes import 
+
+import userRouter from './routes/user.routes.js'
+
+//routes declaration 
+app.use("/api/v1/users",userRouter);
+
+
+//https://localhost:8000/api/v1/users
 export { app };
