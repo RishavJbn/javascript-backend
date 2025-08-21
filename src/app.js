@@ -8,11 +8,11 @@ app.use(
     cors({
         origin: process.env.CORS_ORIGIN,
         credentials: true,
-    })
+    })  //cors is used to enable Cross-Origin Resource Sharing which is a mechanism that allows restricted resources on a web page to be requested from another domain outside the domain from which the first resource was served.
 );
 
-app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ limit: "16kb" }));
-app.use(cookieParser());
+app.use(express.json({ limit: "16kb" })); //express.json is used to parse incoming JSON requests in more simple words it means it takes the JSON data from the request body and makes it available in req.body
+app.use(express.urlencoded({ limit: "16kb" })); //express.urlencoded is used to parse incoming requests with urlencoded payloads in simple terms it means it takes the URL-encoded data from the request body and makes it available in req.body
+app.use(cookieParser()); //cookieParser is used to parse cookies attached to the client request object
 
 export { app };
