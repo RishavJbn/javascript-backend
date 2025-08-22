@@ -12,6 +12,7 @@ app.use(
 );
 
 app.use(express.json({ limit: "16kb" })); //express.json is used to parse incoming JSON requests in more simple words it means it takes the JSON data from the request body and makes it available in req.body
+app.use(express.static("public")); //express.static is used to serve static files such as images, CSS files, and JavaScript files
 app.use(express.urlencoded({ limit: "16kb" })); //express.urlencoded is used to parse incoming requests with urlencoded payloads in simple terms it means it takes the URL-encoded data from the request body and makes it available in req.body
 app.use(cookieParser()); //cookieParser is used to parse cookies attached to the client request object
 
