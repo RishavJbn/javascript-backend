@@ -5,10 +5,10 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import cookieParser from "cookie-parser";
 
-const options ={
-    httponly:true,
-    secure:true
-}
+const options = {
+    httponly: true,
+    secure: true,
+};
 
 const generateAccessandRefreshTokens = async (userId) => {
     try {
@@ -21,8 +21,8 @@ const generateAccessandRefreshTokens = async (userId) => {
         // By default, Mongoose checks all fields in the User schema before saving.
         // Setting validateBeforeSave: false stops this validation, since we're only updating refreshToken.
         await user.save({ validateBeforeSave: false });
-        
-        return {accessToken,refreshToken}
+
+        return { accessToken, refreshToken };
     } catch (error) {
         throw new ApiError(
             500,
@@ -114,45 +114,88 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-    const { username, email, password } = req.body;
-    //check username , email is not empty
-    // check if users exist or not
-    //check password is correct or not
-    // send cookies as users is logged in
-    // access and refresh token
-    // at last return api response
-    if (!username || !email) {
-        throw new ApiError(400, "username or email is not entered ");
+    
+
+    // req body -> data
+    //find the user
+    //password check
+    //access and referesh token
+    //send cookie
+    const { email, username, password } = req.body;
+    console.log(email);
+
+    if (!username && !email) {
+        throw new ApiError(400, "username or email is required");
     }
+
+    // Here is an alternative of above code based on logic discussed in video:
+    // if (!(username || email)) {
+    //     throw new ApiError(400, "username or email is required")
+
+    // }
+
     const user = await User.findOne({
         $or: [{ username }, { email }],
     });
 
     if (!user) {
-        throw new ApiError(404, "user doesnt exist ");
+        throw new ApiError(404, "User does not exist");
     }
+
     const isPasswordValid = await user.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
-        throw new ApiError(401, "invalid user credentials ");
+        throw new ApiError(401, "Invalid user credentials");
     }
 
-    const {accessToken,refreshToken} =await generateAccessandRefreshTokens(user._id)
+    const { accessToken, refreshToken } = await generateAccessandRefreshTokens(
+        user._id
+    );
 
-    const loggedInUser = await User.findById(user._id).select("-password -token")
-    // it is for displaying purpose in the api response that we return 
+    const loggedInUser = await User.findById(user._id).select(
+        "-password -refreshToken"
+    );
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: loggedInUser,
+                    accessToken,
+                    refreshToken,
+                },
+                "User logged In Successfully"
+            )
+        );
+});
+
+const logoutUser = asyncHandler(async (req,res)=>{
+    //refresh token ko undefined kar denge 
+    //clear cookies
+    await User.findByIdAndUpdate(req.user._id,
+        {
+            $set:{
+                refreshToken: undefined
+            }
+        },{
+            new:true
+        }
+    )
     
     return res
     .status(200)
-    .cookie("refreshToken",refreshToken,options)
-    .cookie("accessToken",accessToken,options)
-    .json(
-        new ApiResponse(200,{
-            user: loggedInUser ,refreshToken, accessToken
-        },"user logged in successfully"
-        )
-    )
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json(new ApiResponse(200,{},"User logged out "))
+})
 
-});
-
-export { registerUser, loginUser };
+export { registerUser, loginUser ,logoutUser};
